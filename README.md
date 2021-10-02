@@ -10,6 +10,7 @@
 ## Introduction
 
 Laravel Sanctum provides a featherweight authentication system for SPAs and simple APIs.
+This version allows you to make Multi Sanctum AccessTokenModel and batabases tables
 
 ## Official Documentation
 
