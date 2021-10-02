@@ -5,6 +5,7 @@ namespace Laravel\Sanctum;
 use Illuminate\Contracts\Auth\Factory as AuthFactory;
 use Illuminate\Http\Request;
 use Illuminate\Support\Arr;
+use Laravel\Sanctum\Multi;
 
 class Guard
 {
@@ -61,15 +62,16 @@ class Guard
         }
 
         if ($token = $request->bearerToken()) {
-            $model = Sanctum::$personalAccessTokenModel;
-
+			$arr = explode('.', $token);
+            $model = Multi::$list[$arr[0]];
+			$token = $arr[1];
             $accessToken = $model::findToken($token);
-
+			
             if (! $this->isValidAccessToken($accessToken) ||
                 ! $this->supportsTokens($accessToken->tokenable)) {
                 return;
             }
-
+			
             if (method_exists($accessToken->getConnection(), 'hasModifiedRecords') &&
                 method_exists($accessToken->getConnection(), 'setRecordModificationState')) {
                 tap($accessToken->getConnection()->hasModifiedRecords(), function ($hasModifiedRecords) use ($accessToken) {

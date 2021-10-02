@@ -3,6 +3,7 @@
 namespace Laravel\Sanctum;
 
 use Illuminate\Support\Str;
+use Laravel\Sanctum\Multi;
 
 trait HasApiTokens
 {
@@ -18,9 +19,8 @@ trait HasApiTokens
      *
      * @return \Illuminate\Database\Eloquent\Relations\MorphMany
      */
-    public function tokens()
-    {
-        return $this->morphMany(Sanctum::$personalAccessTokenModel, 'tokenable');
+    public function tokens() {
+        return $this->hasMany($this->personalAccessTokenModel);
     }
 
     /**
@@ -41,15 +41,16 @@ trait HasApiTokens
      * @param  array  $abilities
      * @return \Laravel\Sanctum\NewAccessToken
      */
-    public function createToken(string $name, array $abilities = ['*'])
-    {
+    public function createToken(string $name, array $abilities = ['*']) {
+		$model = explode('\\',get_class($this));// User
+		$model = end($model);
+		$this->personalAccessTokenModel = Multi::$list[$model];// UserAccessToken
         $token = $this->tokens()->create([
             'name' => $name,
             'token' => hash('sha256', $plainTextToken = Str::random(40)),
             'abilities' => $abilities,
         ]);
-
-        return new NewAccessToken($token, $token->getKey().'|'.$plainTextToken);
+        return new NewAccessToken($token, $model.'.'.$token->getKey().'|'.$plainTextToken);
     }
 
     /**

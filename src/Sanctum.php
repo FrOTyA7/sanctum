@@ -11,7 +11,7 @@ class Sanctum
      *
      * @var string
      */
-    public static $personalAccessTokenModel = 'Laravel\\Sanctum\\PersonalAccessToken';
+    //public static $personalAccessTokenModel = 'Laravel\\Sanctum\\PersonalAccessToken';
 
     /**
      * A callback that can add to the validation of the access token.
@@ -35,9 +35,9 @@ class Sanctum
      * @param  string  $guard
      * @return \Illuminate\Contracts\Auth\Authenticatable
      */
-    public static function actingAs($user, $abilities = [], $guard = 'sanctum')
+    public function actingAs($user, $abilities = [], $guard = 'sanctum')
     {
-        $token = Mockery::mock(self::personalAccessTokenModel())->shouldIgnoreMissing(false);
+        $token = Mockery::mock($this->personalAccessTokenModel())->shouldIgnoreMissing(false);
 
         if (in_array('*', $abilities)) {
             $token->shouldReceive('can')->withAnyArgs()->andReturn(true);
@@ -58,17 +58,6 @@ class Sanctum
         app('auth')->shouldUse($guard);
 
         return $user;
-    }
-
-    /**
-     * Set the personal access token model name.
-     *
-     * @param  string  $model
-     * @return void
-     */
-    public static function usePersonalAccessTokenModel($model)
-    {
-        static::$personalAccessTokenModel = $model;
     }
 
     /**
@@ -109,8 +98,8 @@ class Sanctum
      *
      * @return string
      */
-    public static function personalAccessTokenModel()
+    public function personalAccessTokenModel()
     {
-        return static::$personalAccessTokenModel;
+        return $this->personalAccessTokenModel;
     }
 }

@@ -5,29 +5,7 @@ namespace Laravel\Sanctum;
 use Illuminate\Database\Eloquent\Model;
 use Laravel\Sanctum\Contracts\HasAbilities;
 
-class PersonalAccessToken extends Model implements HasAbilities
-{
-    /**
-     * The attributes that should be cast to native types.
-     *
-     * @var array
-     */
-    protected $casts = [
-        'abilities' => 'json',
-        'last_used_at' => 'datetime',
-    ];
-
-    /**
-     * The attributes that are mass assignable.
-     *
-     * @var array
-     */
-    protected $fillable = [
-        'name',
-        'token',
-        'abilities',
-    ];
-
+class PersonalAccessToken extends Model implements HasAbilities {
     /**
      * The attributes that should be hidden for serialization.
      *
@@ -40,11 +18,11 @@ class PersonalAccessToken extends Model implements HasAbilities
     /**
      * Get the tokenable model that the access token belongs to.
      *
-     * @return \Illuminate\Database\Eloquent\Relations\MorphTo
+     * @return \Illuminate\Database\Eloquent\Relations\belongsTo
      */
-    public function tokenable()
-    {
-        return $this->morphTo('tokenable');
+    public function tokenable(){
+		$model = explode('\\', $this->tokenableModel);
+        return $this->belongsTo($this->tokenableModel, strtolower(end($model)).'_id');
     }
 
     /**
